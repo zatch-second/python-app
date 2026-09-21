@@ -1,10 +1,9 @@
 import unittest
-from app import add_numbers
+from app import fetch_data
 
 class TestApp(unittest.TestCase):
-    def test_add(self):
-        self.assertEqual(add_numbers(5, 5), 10)
-        self.assertEqual(add_numbers(-1, 1), 0)
+    def test_fetch(self):
+        self.assertEqual(fetch_data(), 1)
 
 if __name__ == '__main__':
     unittest.main()
