@@ -8,15 +8,33 @@ pipeline {
             }
         }
         
-        stage('Run Tests') {
-            steps {
-                sh 'python3 test_app.py'
+        stage('Database preperation'){
+            steps{
+                sh 'docker compose up -d db'
+                sleep 5
             }
         }
-        
-        stage('Build Docker Image') {
+
+        stage('Run Tests') {
             steps {
-                sh 'docker build -t jenkins-python-app:latest .'
+                sh '''
+                    python3 -m venv venv
+                    source venv/bin/activate
+                    pip install -r requirements.txt
+                    pytest test_app.py --junitxml=report.xml
+                '''
+            }
+            post {
+                always {
+                    // This tells Jenkins to look for the file and build the UI graph
+                    junit 'report.xml'
+                }
+            }
+        }
+
+        stage('Cleanup'){
+            steps{
+                sh 'docker compose down'
             }
         }
     }
